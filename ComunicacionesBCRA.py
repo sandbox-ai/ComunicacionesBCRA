@@ -69,12 +69,12 @@ class ScrapperBCRA:
         logging.info(f"Saved {len(self.pdf_urls)} PDF URLs to {filename}")
 
     def save_pdfs(self):
-        if not os.path.exists(f'comunicados/{self.tipo}'):
-            os.makedirs(f'comunicados/{self.tipo}')
+        if not os.path.exists(f'{self.tipo}'):
+            os.makedirs(f'{self.tipo}')
 
         for url in self.pdf_urls:
             pdf_filename = url.split('/')[-1]
-            pdf_path = f'comunicados/{self.tipo}/{pdf_filename}'
+            pdf_path = f'{self.tipo}/{pdf_filename}'
             logging.info(f"Downloading {url} to {pdf_path}")
             retries = 0
             while retries < self.max_retries:
@@ -96,8 +96,8 @@ class ScrapperBCRA:
                 logging.error(f"Failed to download {url} after {self.max_retries} retries")
 
     def scrap_pdfs_naive(self):
-        if not os.path.exists(f'comunicados/{self.tipo}'):
-            os.makedirs(f'comunicados/{self.tipo}')
+        if not os.path.exists(f'{self.tipo}'):
+            os.makedirs(f'{self.tipo}')
         
         params = {
             'tipo': self.tipo,
@@ -117,7 +117,7 @@ class ScrapperBCRA:
         retries = 0
         for n in range(int(latest), 0, -1):
                 try:
-                    file_path = f'comunicados/{self.tipo}/{self.tipo}{str(n).zfill(4)}.pdf'
+                    file_path = f'{self.tipo}/{self.tipo}{str(n).zfill(4)}.pdf'
                     if os.path.exists(file_path):
                         logging.info(f"PDF {file_path} already exists, skipping...")
                         continue
