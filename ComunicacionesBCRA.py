@@ -34,7 +34,7 @@ class ScrapperBCRA:
                 existing_urls = set(file.read().splitlines())
         
         while True:
-            logging.info(f"Scraping page {page} for tipo {.tipo}")
+            logging.info(f"Scraping page {page} for tipo {tipo}")
             response = requests.get(self.base_url, params=params, verify=False)
             
             if response.status_code != 200:
@@ -111,7 +111,7 @@ def main():
     tipos = ['A', 'B', 'C', 'P']
     for tipo in tipos:
         scrapper = ScrapperBCRA()
-        scrapper.scrap_pdfs_naive(tipo)
+        scrapper.scrape_pdfs_naive(tipo)
 
 if __name__ == "__main__":
     main()
