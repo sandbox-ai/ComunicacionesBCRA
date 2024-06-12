@@ -94,7 +94,12 @@ class ScrapperBCRA:
                         logging.info(f"PDF {file_path} already exists, skipping...")
                         continue
                     url = f'https://www.bcra.gob.ar/Pdfs/comytexord/{tipo}{str(n).zfill(4)}.pdf'
-                    response = requests.get(url, verify=False)
+                    content_type = response.headers.get('Content-Type')
+                    if content_type and not content_type.startswith('application/pdf'):
+                        logging.warning(f"Unexpected content type: {content_type}, retrying...")
+                        retries += 1
+                        sleep(2)
+                        continue
                     if response.status_code == 200:
                         with open(file_path, 'wb') as file:
                             file.write(response.content)
