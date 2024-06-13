@@ -17,6 +17,7 @@ class ScrapperBCRA:
     def __init__(self, max_retries=3):
         self.pdf_urls = []
         self.max_retries = max_retries
+        self.unavailable = 78853 # Number of docs we already know we can't retrieve
 
     def scrape_urls(self, tipo, stop_at_existing=False):
         page = 1
@@ -88,15 +89,24 @@ class ScrapperBCRA:
         latest = match.group(0)[1:]
         retries = 0
         for n in range(int(latest), 0, -1):
+                # No more C or P docs available below these numbers ¯\_(ツ)_/¯
+                if tipo=="C" and n==35349:
+                    break
+                if tipo=="P" and n==43504:
+                    break
                 try:
                     file_path = f'{tipo}/{tipo}{str(n).zfill(4)}.pdf'
                     if os.path.exists(file_path):
                         logging.info(f"PDF {file_path} already exists, skipping...")
                         continue
                     url = f'https://www.bcra.gob.ar/Pdfs/comytexord/{tipo}{str(n).zfill(4)}.pdf'
+                    response = requests.get(url, verify=False)
                     content_type = response.headers.get('Content-Type')
                     if content_type and not content_type.startswith('application/pdf'):
-                        logging.warning(f"Unexpected content type: {content_type}, retrying...")
+                        logging.warning(f"Unexpected content type: {content_type}")
+                        if "La página buscada no está diponible en este momento" in response.text:
+                            logging.warning(f"Document is unavailable: {tipo}{str(n).zfill(4)}.pdf")
+                            self.unavailable += 1
                         retries += 1
                         sleep(2)
                         continue
